@@ -6,11 +6,11 @@ from datetime import datetime
 import praw
 
 #Fill out this info
-weatherCode = 'YourWeatherCode'
-name = 'YourName'
+weatherCode = 'ZIP'
+name = 'NAME'
 
 #Pushbullet API Key
-api_key = 'yourApiKeyHere'
+api_key = 'KEY'
 
 def pushGoodMorning():
 	#PushBullet API
@@ -22,28 +22,28 @@ def pushGoodMorning():
 	mornAfternoon = datetime.now().strftime('%p')
 
 	#Here we push the notifcation(s)
-	if now.hour == 6 and now.minute == 30:
+	if now.hour == 7 and now.minute == 30:
 		#Getting the weather
 		weather_results = pywapi.get_weather_from_weather_com(weatherCode)
-		weather_saying = ("The weather is " + weather_results['current_conditions']['text'])
+		weather_saying = ("Today's forecast is " + weather_results['forecasts'][0]['day']['text'] + ".")
 		#pushing
-		push = pb.push_note(name + ", it's currently " + str(now.hour-12) + ":" + str(now.minute) + mornAfternoon + ".",  weather_saying)
+		push = pb.push_note(name + ", it's currently " + str(now.hour) + ":" + str(now.minute) + ".",  weather_saying)
 	else:
-		#Put something else here
-		print "Oh darn, the time is off for the weather, we'll try again soon"
+                pass
 
 	
-	if now.hour == 22 and now.minute == 17:
+	if now.hour == 8 and now.minute == 15:
 		#getting reddit post title
-		user_agent = "Bot that grabs top title in /r/ news"
+		user_agent = "Browser that loads top post in worldnews"
 		r = praw.Reddit(user_agent=user_agent)
-		submission = r.get_subreddit('news').get_hot(limit=1)
+		submission = r.get_subreddit('worldnews').get_top_from_day(limit=1)
 		for x in submission:
-			topTitle = str(x.title)
+			topTitle = x.title.encode('utf-8')
+                        topLink = x.url.encode('utf-8')
 		#Pushing
-		push = pb.push_note(name+  ", the latest news is:",  topTitle)
+		push = pb.push_link(topTitle, topLink)
 	else:
-		print "Uh oh! The time didnt match up for your reddit post, we'll try again later"
+		pass
 
 while True:
 	sleep(45)
